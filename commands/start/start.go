@@ -27,3 +27,9 @@ func (cmd start) ShouldExecute(update tgbotapi.Update) bool {
 func (cmd start) Execute(update tgbotapi.Update) error {
 	return cmd.QuickReply(update.Message, usage)
 }
+
+func (cmd start) Help() finch.Help {
+	return finch.Help{
+		Name: "Start",
+	}
+}
