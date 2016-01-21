@@ -40,7 +40,7 @@ func (cmd createSelection) Execute(message tgbotapi.Message) error {
 	}
 
 	msg := tgbotapi.NewMessage(message.Chat.ID,
-		"Please enter a list of items seperated by new lines.")
+		"Please enter a list of items seperated by new lines.\nAn item that is prefixed with a '!' will become the title.")
 
 	msg.ReplyMarkup = tgbotapi.ForceReply{
 		ForceReply: true,
@@ -77,6 +77,19 @@ func (cmd createSelection) ExecuteKeyboard(message tgbotapi.Message) error {
 	num := 0
 
 	for _, item := range items {
+		if item[0] == '!' {
+			_, err = database.DB.Exec(`
+				update selection
+					set title = $1
+					where id = $2
+			`, item[1:], selection.ID)
+			if err != nil {
+				return err
+			}
+
+			continue
+		}
+
 		_, err := database.NewSelectionItem(selection.ID, item)
 		if err != nil {
 			return err

@@ -56,6 +56,10 @@ func (cmd selectItem) Execute(message tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID,
 		"Select your item")
 
+	if selection.Title.Valid && selection.Title.String != "" {
+		msg.Text = msg.Text + " for: " + selection.Title.String
+	}
+
 	msg.ReplyToMessageID = message.MessageID
 	msg.ReplyMarkup = tgbotapi.ReplyKeyboardMarkup{
 		Keyboard:        itemList,

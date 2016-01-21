@@ -30,6 +30,7 @@ func main() {
 			id integer primary key,
 			user_id integer not null,
 			chat_id integer not null,
+			title text,
 			active integer
 		);
 

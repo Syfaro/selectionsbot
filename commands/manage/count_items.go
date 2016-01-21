@@ -57,6 +57,12 @@ func (cmd countItems) Execute(message tgbotapi.Message) error {
 
 	b := bytes.Buffer{}
 
+	if selection.Title.Valid && selection.Title.String != "" {
+		b.WriteString("Counts from ")
+		b.WriteString(selection.Title.String)
+		b.WriteString("\n\n")
+	}
+
 	for _, item := range items {
 		b.WriteString(item.Item)
 		b.WriteString(" - ")

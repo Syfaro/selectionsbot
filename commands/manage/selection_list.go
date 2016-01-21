@@ -51,6 +51,12 @@ func (cmd selectionList) Execute(message tgbotapi.Message) error {
 
 	b := bytes.Buffer{}
 
+	if selection.Title.Valid && selection.Title.String != "" {
+		b.WriteString("Counts from ")
+		b.WriteString(selection.Title.String)
+		b.WriteString("\n\n")
+	}
+
 	for _, item := range items {
 		var votes []database.SelectionVote
 		err = database.DB.Select(&votes, `
