@@ -6,6 +6,7 @@ import (
 	"github.com/syfaro/finch"
 	_ "github.com/syfaro/finch/commands/help"
 	_ "github.com/syfaro/selectionsbot/commands/manage"
+	_ "github.com/syfaro/selectionsbot/commands/start"
 	"github.com/syfaro/selectionsbot/database"
 	"os"
 )
