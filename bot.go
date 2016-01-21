@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	db = sqlx.MustOpen("sqlite3", os.Getenv("DATABASE_PATH"))
+	db := sqlx.MustOpen("sqlite3", os.Getenv("DATABASE_PATH"))
 	database.DB = db
 
 	db.MustExec(`
