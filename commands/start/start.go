@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/syfaro/finch"
+	"gopkg.in/telegram-bot-api.v2"
 )
 
 var usage string = `How to use this bot:
@@ -20,12 +20,12 @@ type start struct {
 	finch.CommandBase
 }
 
-func (cmd start) ShouldExecute(update tgbotapi.Update) bool {
-	return finch.SimpleCommand("start", update.Message.Text)
+func (cmd start) ShouldExecute(message tgbotapi.Message) bool {
+	return finch.SimpleCommand("start", message.Text)
 }
 
-func (cmd start) Execute(update tgbotapi.Update) error {
-	return cmd.QuickReply(update.Message, usage)
+func (cmd start) Execute(message tgbotapi.Message) error {
+	return cmd.QuickReply(message, usage)
 }
 
 func (cmd start) Help() finch.Help {

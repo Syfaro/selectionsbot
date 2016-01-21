@@ -2,9 +2,9 @@ package commands
 
 import (
 	"database/sql"
-	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/syfaro/finch"
 	"github.com/syfaro/selectionsbot/database"
+	"gopkg.in/telegram-bot-api.v2"
 	"strconv"
 	"strings"
 )
@@ -17,11 +17,11 @@ type createSelection struct {
 	finch.CommandBase
 }
 
-func (cmd createSelection) ShouldExecute(update tgbotapi.Update) bool {
-	return finch.SimpleCommand("create", update.Message.Text)
+func (cmd createSelection) ShouldExecute(message tgbotapi.Message) bool {
+	return finch.SimpleCommand("create", message.Text)
 }
 
-func (cmd createSelection) Execute(update tgbotapi.Update) error {
+func (cmd createSelection) Execute(message tgbotapi.Message) error {
 	var selection database.Selection
 	err := database.DB.Get(&selection, `
 		select
@@ -31,15 +31,15 @@ func (cmd createSelection) Execute(update tgbotapi.Update) error {
 		where
 			chat_id = $1 and
 			active = 1
-	`, update.Message.Chat.ID)
+	`, message.Chat.ID)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	} else if err != sql.ErrNoRows {
-		return cmd.QuickReply(update.Message,
+		return cmd.QuickReply(message,
 			"Please end the current selection in this chat first!")
 	}
 
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID,
+	msg := tgbotapi.NewMessage(message.Chat.ID,
 		"Please enter a list of items seperated by new lines.")
 
 	msg.ReplyMarkup = tgbotapi.ForceReply{
@@ -47,29 +47,29 @@ func (cmd createSelection) Execute(update tgbotapi.Update) error {
 		Selective:  true,
 	}
 
-	msg.ReplyToMessageID = update.Message.MessageID
+	msg.ReplyToMessageID = message.MessageID
 
-	cmd.SetWaiting(update.Message.From.ID)
+	cmd.SetWaiting(message.From.ID)
 
 	return cmd.SendMessage(msg)
 }
 
-func (cmd createSelection) ExecuteKeyboard(update tgbotapi.Update) error {
-	cmd.ReleaseWaiting(update.Message.From.ID)
+func (cmd createSelection) ExecuteKeyboard(message tgbotapi.Message) error {
+	cmd.ReleaseWaiting(message.From.ID)
 
 	user := database.User{}
-	err := user.Load(update.Message.From.ID)
+	err := user.Load(message.From.ID)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	} else if err == sql.ErrNoRows {
-		if err = user.Init(update.Message.From); err != nil {
+		if err = user.Init(message.From); err != nil {
 			return err
 		}
 	}
 
-	items := strings.Split(update.Message.Text, "\n")
+	items := strings.Split(message.Text, "\n")
 
-	selection, err := database.NewSelection(user.ID, update.Message.Chat.ID)
+	selection, err := database.NewSelection(user.ID, message.Chat.ID)
 	if err != nil {
 		return err
 	}
@@ -85,7 +85,7 @@ func (cmd createSelection) ExecuteKeyboard(update tgbotapi.Update) error {
 		num++
 	}
 
-	return cmd.QuickReply(update.Message, "Added "+strconv.Itoa(num)+" items to selection!")
+	return cmd.QuickReply(message, "Added "+strconv.Itoa(num)+" items to selection!")
 }
 
 func (cmd createSelection) Help() finch.Help {

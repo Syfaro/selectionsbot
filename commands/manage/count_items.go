@@ -2,9 +2,9 @@ package commands
 
 import (
 	"bytes"
-	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/syfaro/finch"
 	"github.com/syfaro/selectionsbot/database"
+	"gopkg.in/telegram-bot-api.v2"
 	"strconv"
 )
 
@@ -16,11 +16,11 @@ type countItems struct {
 	finch.CommandBase
 }
 
-func (cmd countItems) ShouldExecute(update tgbotapi.Update) bool {
-	return finch.SimpleCommand("count", update.Message.Text)
+func (cmd countItems) ShouldExecute(message tgbotapi.Message) bool {
+	return finch.SimpleCommand("count", message.Text)
 }
 
-func (cmd countItems) Execute(update tgbotapi.Update) error {
+func (cmd countItems) Execute(message tgbotapi.Message) error {
 	var selection database.Selection
 	err := database.DB.Get(&selection, `
 		select
@@ -31,7 +31,7 @@ func (cmd countItems) Execute(update tgbotapi.Update) error {
 			chat_id = $1
 		order by
 			id desc
-	`, update.Message.Chat.ID)
+	`, message.Chat.ID)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (cmd countItems) Execute(update tgbotapi.Update) error {
 		b.WriteString("\n")
 	}
 
-	return cmd.QuickReply(update.Message, b.String())
+	return cmd.QuickReply(message, b.String())
 }
 
 func (cmd countItems) Help() finch.Help {

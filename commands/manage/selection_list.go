@@ -2,9 +2,9 @@ package commands
 
 import (
 	"bytes"
-	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/syfaro/finch"
 	"github.com/syfaro/selectionsbot/database"
+	"gopkg.in/telegram-bot-api.v2"
 	"strings"
 )
 
@@ -16,11 +16,11 @@ type selectionList struct {
 	finch.CommandBase
 }
 
-func (cmd selectionList) ShouldExecute(update tgbotapi.Update) bool {
-	return finch.SimpleCommand("list", update.Message.Text)
+func (cmd selectionList) ShouldExecute(message tgbotapi.Message) bool {
+	return finch.SimpleCommand("list", message.Text)
 }
 
-func (cmd selectionList) Execute(update tgbotapi.Update) error {
+func (cmd selectionList) Execute(message tgbotapi.Message) error {
 	var selection database.Selection
 	err := database.DB.Get(&selection, `
 		select
@@ -31,7 +31,7 @@ func (cmd selectionList) Execute(update tgbotapi.Update) error {
 			chat_id = $1
 		order by
 			id desc
-	`, update.Message.Chat.ID)
+	`, message.Chat.ID)
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func (cmd selectionList) Execute(update tgbotapi.Update) error {
 		b.WriteString("\n")
 	}
 
-	return cmd.QuickReply(update.Message, b.String())
+	return cmd.QuickReply(message, b.String())
 }
 
 func (cmd selectionList) Help() finch.Help {
