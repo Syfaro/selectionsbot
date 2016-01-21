@@ -13,11 +13,7 @@ import (
 )
 
 func main() {
-	db, err := sqlx.Open("sqlite3", os.Getenv("DATABASE_PATH"))
-	if err != nil {
-		panic(err)
-	}
-
+	db = sqlx.MustOpen("sqlite3", os.Getenv("DATABASE_PATH"))
 	database.DB = db
 
 	db.MustExec(`
