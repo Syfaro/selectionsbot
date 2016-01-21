@@ -133,7 +133,7 @@ func (cmd selectItem) Help() finch.Help {
 	return finch.Help{
 		Name:        "Select item",
 		Description: "Selects an item",
-		Example:     "/select",
+		Example:     "/select@@",
 		Botfather: [][]string{
 			[]string{"select", "Select an item"},
 		},

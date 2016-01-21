@@ -59,7 +59,7 @@ func (cmd endSelection) Help() finch.Help {
 	return finch.Help{
 		Name:        "End",
 		Description: "Ends selection",
-		Example:     "/end",
+		Example:     "/end@@",
 		Botfather: [][]string{
 			[]string{"end", "Ends the current selection"},
 		},

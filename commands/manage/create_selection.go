@@ -92,7 +92,7 @@ func (cmd createSelection) Help() finch.Help {
 	return finch.Help{
 		Name:        "Create selection",
 		Description: "Create a new selection set",
-		Example:     "/create",
+		Example:     "/create@@",
 		Botfather: [][]string{
 			[]string{"create", "Creates a new selection set"},
 		},

@@ -71,7 +71,7 @@ func (cmd selectionList) Help() finch.Help {
 	return finch.Help{
 		Name:        "List",
 		Description: "List selected items",
-		Example:     "/list",
+		Example:     "/list@@",
 		Botfather: [][]string{
 			[]string{"list", "List who has selected what item"},
 		},

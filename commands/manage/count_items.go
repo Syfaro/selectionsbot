@@ -71,7 +71,7 @@ func (cmd countItems) Help() finch.Help {
 	return finch.Help{
 		Name:        "Counts",
 		Description: "Total counts of selections",
-		Example:     "/count",
+		Example:     "/count@@",
 		Botfather: [][]string{
 			[]string{"count", "Count total selections on each item"},
 		},
