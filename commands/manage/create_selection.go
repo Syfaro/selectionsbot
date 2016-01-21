@@ -54,7 +54,7 @@ func (cmd createSelection) Execute(message tgbotapi.Message) error {
 	return cmd.SendMessage(msg)
 }
 
-func (cmd createSelection) ExecuteKeyboard(message tgbotapi.Message) error {
+func (cmd createSelection) ExecuteWaiting(message tgbotapi.Message) error {
 	cmd.ReleaseWaiting(message.From.ID)
 
 	user := database.User{}

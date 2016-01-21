@@ -73,7 +73,7 @@ func (cmd selectItem) Execute(message tgbotapi.Message) error {
 	return cmd.SendMessage(msg)
 }
 
-func (cmd selectItem) ExecuteKeyboard(message tgbotapi.Message) error {
+func (cmd selectItem) ExecuteWaiting(message tgbotapi.Message) error {
 	cmd.ReleaseWaiting(message.From.ID)
 
 	user := database.User{}
