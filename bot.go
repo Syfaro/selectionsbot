@@ -4,6 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/syfaro/finch"
+	_ "github.com/syfaro/finch/commands/cancel"
 	_ "github.com/syfaro/finch/commands/help"
 	_ "github.com/syfaro/selectionsbot/commands/manage"
 	_ "github.com/syfaro/selectionsbot/commands/start"
