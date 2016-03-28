@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/syfaro/finch"
 	"github.com/syfaro/selectionsbot/database"
-	"gopkg.in/telegram-bot-api.v2"
+	"gopkg.in/telegram-bot-api.v3"
 	"strings"
 )
 

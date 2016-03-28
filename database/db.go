@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"github.com/jmoiron/sqlx"
-	"gopkg.in/telegram-bot-api.v2"
+	"gopkg.in/telegram-bot-api.v3"
 )
 
 var DB *sqlx.DB
@@ -51,16 +51,16 @@ func (u *User) Init(user tgbotapi.User) error {
 type Selection struct {
 	ID     int64          `db:"id"`
 	UserID int64          `db:"user_id"`
-	ChatID int            `db:"chat_id"`
+	ChatID int64          `db:"chat_id"`
 	Title  sql.NullString `db:"title"`
 	Active bool           `db:"active"`
 }
 
-func NewSelection(userID int64, chatID int) (Selection, error) {
+func NewSelection(userID, chatID int64) (Selection, error) {
 	return NewSelectionWithTitle(userID, chatID, nil)
 }
 
-func NewSelectionWithTitle(userID int64, chatID int, title *string) (Selection, error) {
+func NewSelectionWithTitle(userID, chatID int64, title *string) (Selection, error) {
 	res, err := DB.Exec(`
 		insert into selection
 			(user_id, chat_id, active) values
