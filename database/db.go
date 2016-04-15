@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"github.com/jmoiron/sqlx"
-	"gopkg.in/telegram-bot-api.v3"
+	"gopkg.in/telegram-bot-api.v4"
 )
 
 var DB *sqlx.DB
@@ -25,7 +25,7 @@ func (u *User) Load(telegramID int) error {
 	`, telegramID)
 }
 
-func (u *User) Init(user tgbotapi.User) error {
+func (u *User) Init(user *tgbotapi.User) error {
 	u.TelegramID = user.ID
 	u.Name = user.String()
 

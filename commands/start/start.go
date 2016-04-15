@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/syfaro/finch"
-	"gopkg.in/telegram-bot-api.v3"
+	"gopkg.in/telegram-bot-api.v4"
 )
 
 var usage string = `How to use this bot:

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/syfaro/finch"
 	"github.com/syfaro/selectionsbot/database"
-	"gopkg.in/telegram-bot-api.v3"
+	"gopkg.in/telegram-bot-api.v4"
 	"strconv"
 	"strings"
 )

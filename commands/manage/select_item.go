@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/syfaro/finch"
 	"github.com/syfaro/selectionsbot/database"
-	"gopkg.in/telegram-bot-api.v3"
+	"gopkg.in/telegram-bot-api.v4"
 )
 
 func init() {
@@ -47,10 +47,11 @@ func (cmd selectItem) Execute(message tgbotapi.Message) error {
 		return err
 	}
 
-	var itemList [][]string
+	var itemList [][]tgbotapi.KeyboardButton
 
 	for _, item := range items {
-		itemList = append(itemList, []string{item.Item})
+		itemList = append(itemList, tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton(item.Item)))
 	}
 
 	msg := tgbotapi.NewMessage(message.Chat.ID,
