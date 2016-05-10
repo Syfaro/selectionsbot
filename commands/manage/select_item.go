@@ -32,7 +32,7 @@ func (cmd selectItem) Execute(message tgbotapi.Message) error {
 	`, message.Chat.ID)
 	if err == sql.ErrNoRows {
 		cmd.QuickReply(message, "There are no active selections")
-		return
+		return nil
 	} else if err != nil {
 		return err
 	}
