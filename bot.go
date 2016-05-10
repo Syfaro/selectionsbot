@@ -1,15 +1,18 @@
 package main
 
 import (
+	"os"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/syfaro/finch"
 	_ "github.com/syfaro/finch/commands/cancel"
 	_ "github.com/syfaro/finch/commands/help"
+
 	_ "github.com/syfaro/selectionsbot/commands/manage"
 	_ "github.com/syfaro/selectionsbot/commands/start"
 	"github.com/syfaro/selectionsbot/database"
-	"os"
 )
 
 func main() {
@@ -47,7 +50,7 @@ func main() {
 
 	f := finch.NewFinch(os.Getenv("TELEGRAM_APITOKEN"))
 
-	f.API.Debug = true
+	f.API.Debug = os.Getenv("DEBUG") == "true"
 
 	f.Start()
 }
