@@ -2,11 +2,12 @@ package commands
 
 import (
 	"database/sql"
-	"github.com/syfaro/finch"
-	"github.com/syfaro/selectionsbot/database"
-	"gopkg.in/telegram-bot-api.v4"
 	"strconv"
 	"strings"
+
+	"github.com/Syfaro/finch"
+	"github.com/Syfaro/selectionsbot/database"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func init() {
@@ -32,15 +33,13 @@ func (cmd createSelection) Execute(message tgbotapi.Message) error {
 			chat_id = $1 and
 			active = 1
 	`, message.Chat.ID)
-	if err != nil && err != sql.ErrNoRows {
-		return err
+	if err == nil {
+		return cmd.QuickReply(message, "Please end the current selection in this chat first")
 	} else if err != sql.ErrNoRows {
-		return cmd.QuickReply(message,
-			"Please end the current selection in this chat first!")
+		return err
 	}
 
-	msg := tgbotapi.NewMessage(message.Chat.ID,
-		"Please enter a list of items seperated by new lines.\nAn item that is prefixed with a '!' will become the title.")
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Please enter a list of items seperated by new lines.\nAn item that is prefixed with a '!' will become the title.")
 
 	msg.ReplyMarkup = tgbotapi.ForceReply{
 		ForceReply: true,
@@ -57,8 +56,7 @@ func (cmd createSelection) Execute(message tgbotapi.Message) error {
 func (cmd createSelection) ExecuteWaiting(message tgbotapi.Message) error {
 	cmd.ReleaseWaiting(message.From.ID)
 
-	user := database.User{}
-	err := user.Load(message.From.ID)
+	user, err := database.LoadUser(message.From.ID)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	} else if err == sql.ErrNoRows {
@@ -88,11 +86,6 @@ func (cmd createSelection) ExecuteWaiting(message tgbotapi.Message) error {
 			}
 
 			continue
-		}
-
-		_, err := database.NewSelectionItem(selection.ID, item)
-		if err != nil {
-			return err
 		}
 
 		num++

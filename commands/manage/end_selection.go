@@ -2,9 +2,10 @@ package commands
 
 import (
 	"database/sql"
-	"github.com/syfaro/finch"
-	"github.com/syfaro/selectionsbot/database"
-	"gopkg.in/telegram-bot-api.v4"
+
+	"github.com/Syfaro/finch"
+	"github.com/Syfaro/selectionsbot/database"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func init() {
@@ -30,15 +31,17 @@ func (cmd endSelection) Execute(message tgbotapi.Message) error {
 			active = 1 and
 			chat_id = $1
 	`, message.Chat.ID)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return cmd.QuickReply(message, "No selection was currently active")
+	} else if err != nil {
 		return err
 	}
 
-	u := database.User{}
-	err = u.Load(message.From.ID)
-	if err == sql.ErrNoRows || selection.UserID != u.ID {
-		return cmd.QuickReply(message,
-			"You did not create the active selection in this channel!")
+	u, err := database.LoadUser(message.From.ID)
+	if err == sql.ErrNoRows {
+		return cmd.QuickReply(message, "Your user doesn't seem to exist!")
+	} else if selection.UserID != u.ID {
+		return cmd.QuickReply(message, "You did not create the active selection in this channel")
 	}
 
 	_, err = database.DB.Exec(`

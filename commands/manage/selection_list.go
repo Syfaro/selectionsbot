@@ -2,10 +2,12 @@ package commands
 
 import (
 	"bytes"
-	"github.com/syfaro/finch"
-	"github.com/syfaro/selectionsbot/database"
-	"gopkg.in/telegram-bot-api.v4"
+	"database/sql"
 	"strings"
+
+	"github.com/Syfaro/finch"
+	"github.com/Syfaro/selectionsbot/database"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func init() {
@@ -32,7 +34,9 @@ func (cmd selectionList) Execute(message tgbotapi.Message) error {
 		order by
 			id desc
 	`, message.Chat.ID)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return cmd.QuickReply(message, "There are no active selections in this chat currently")
+	} else if err != nil {
 		return err
 	}
 
@@ -45,7 +49,9 @@ func (cmd selectionList) Execute(message tgbotapi.Message) error {
 		where
 			selection_id = $1
 	`, selection.ID)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return cmd.QuickReply(message, "Somehow, the selected items disappeared")
+	} else if err != nil {
 		return err
 	}
 
@@ -68,7 +74,9 @@ func (cmd selectionList) Execute(message tgbotapi.Message) error {
 				selection_id = $1 and
 				selection_item_id = $2
 		`, selection.ID, item.ID)
-		if err != nil {
+		if err != sql.ErrNoRows {
+			return cmd.QuickReply(message, "No selections have been cast yet")
+		} else if err != nil {
 			return err
 		}
 
@@ -84,7 +92,9 @@ func (cmd selectionList) Execute(message tgbotapi.Message) error {
 				where
 					id = $1
 			`, vote.UserID)
-			if err != nil {
+			if err == sql.ErrNoRows {
+				user.Name = "Deleted user"
+			} else if err != nil {
 				return err
 			}
 

@@ -6,13 +6,13 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/syfaro/finch"
-	_ "github.com/syfaro/finch/commands/cancel"
-	_ "github.com/syfaro/finch/commands/help"
+	"github.com/Syfaro/finch"
+	_ "github.com/Syfaro/finch/commands/cancel"
+	_ "github.com/Syfaro/finch/commands/help"
 
-	_ "github.com/syfaro/selectionsbot/commands/manage"
-	_ "github.com/syfaro/selectionsbot/commands/start"
-	"github.com/syfaro/selectionsbot/database"
+	_ "github.com/Syfaro/selectionsbot/commands/manage"
+	_ "github.com/Syfaro/selectionsbot/commands/start"
+	"github.com/Syfaro/selectionsbot/database"
 )
 
 func main() {
@@ -48,7 +48,13 @@ func main() {
 		);
 	`)
 
-	f := finch.NewFinch(os.Getenv("TELEGRAM_APITOKEN"))
+	token := os.Getenv("TELEGRAM_APITOKEN")
+
+	if token == "" {
+		panic("No Telegram token was specified!")
+	}
+
+	f := finch.NewFinch(token)
 
 	f.API.Debug = os.Getenv("DEBUG") == "true"
 

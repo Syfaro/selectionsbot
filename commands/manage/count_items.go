@@ -2,10 +2,12 @@ package commands
 
 import (
 	"bytes"
-	"github.com/syfaro/finch"
-	"github.com/syfaro/selectionsbot/database"
-	"gopkg.in/telegram-bot-api.v4"
+	"database/sql"
 	"strconv"
+
+	"github.com/Syfaro/finch"
+	"github.com/Syfaro/selectionsbot/database"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func init() {
@@ -32,7 +34,9 @@ func (cmd countItems) Execute(message tgbotapi.Message) error {
 		order by
 			id desc
 	`, message.Chat.ID)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return cmd.QuickReply(message, "Wow, no selections have been made for this channel yet! Try creating one with /create@@")
+	} else if err != nil {
 		return err
 	}
 
@@ -51,8 +55,14 @@ func (cmd countItems) Execute(message tgbotapi.Message) error {
 		group by
 			selection_item_id
 	`, selection.ID)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return cmd.QuickReply(message, "No selections have been cast yet")
+	} else if err != nil {
 		return err
+	}
+
+	if len(items) == 0 {
+		return cmd.QuickReply(message, "No selections have been cast yet")
 	}
 
 	b := bytes.Buffer{}

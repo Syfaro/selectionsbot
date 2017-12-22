@@ -2,9 +2,10 @@ package commands
 
 import (
 	"database/sql"
-	"github.com/syfaro/finch"
-	"github.com/syfaro/selectionsbot/database"
-	"gopkg.in/telegram-bot-api.v4"
+
+	"github.com/Syfaro/finch"
+	"github.com/Syfaro/selectionsbot/database"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func init() {
@@ -31,8 +32,7 @@ func (cmd selectItem) Execute(message tgbotapi.Message) error {
 			active = 1
 	`, message.Chat.ID)
 	if err == sql.ErrNoRows {
-		cmd.QuickReply(message, "There are no active selections")
-		return nil
+		return cmd.QuickReply(message, "There are no active selections")
 	} else if err != nil {
 		return err
 	}
@@ -46,7 +46,9 @@ func (cmd selectItem) Execute(message tgbotapi.Message) error {
 		where
 			selection_id = $1
 	`, selection.ID)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return cmd.QuickReply(message, "No items were added to the current selection")
+	} else if err != nil {
 		return err
 	}
 
@@ -80,14 +82,13 @@ func (cmd selectItem) Execute(message tgbotapi.Message) error {
 func (cmd selectItem) ExecuteWaiting(message tgbotapi.Message) error {
 	cmd.ReleaseWaiting(message.From.ID)
 
-	user := database.User{}
-	err := user.Load(message.From.ID)
-	if err != nil && err != sql.ErrNoRows {
-		return err
-	} else if err == sql.ErrNoRows {
+	user, err := database.LoadUser(message.From.ID)
+	if err == sql.ErrNoRows {
 		if err = user.Init(message.From); err != nil {
 			return err
 		}
+	} else if err != nil {
+		return err
 	}
 
 	var selection database.Selection
@@ -100,7 +101,9 @@ func (cmd selectItem) ExecuteWaiting(message tgbotapi.Message) error {
 			chat_id = $1 and
 			active = 1
 	`, message.Chat.ID)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return cmd.QuickReply(message, "There are no active selections in this chat currently")
+	} else if err != nil {
 		return err
 	}
 

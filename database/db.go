@@ -2,8 +2,9 @@ package database
 
 import (
 	"database/sql"
+
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/jmoiron/sqlx"
-	"gopkg.in/telegram-bot-api.v4"
 )
 
 var DB *sqlx.DB
@@ -14,8 +15,9 @@ type User struct {
 	Name       string `db:"name"`
 }
 
-func (u *User) Load(telegramID int) error {
-	return DB.Get(u, `
+func LoadUser(telegramID int) (*User, error) {
+	var u User
+	err := DB.Get(&u, `
 		select
 			*
 		from
@@ -23,6 +25,7 @@ func (u *User) Load(telegramID int) error {
 		where
 			telegram_id = $1
 	`, telegramID)
+	return &u, err
 }
 
 func (u *User) Init(user *tgbotapi.User) error {
@@ -57,10 +60,6 @@ type Selection struct {
 }
 
 func NewSelection(userID, chatID int64) (Selection, error) {
-	return NewSelectionWithTitle(userID, chatID, nil)
-}
-
-func NewSelectionWithTitle(userID, chatID int64, title *string) (Selection, error) {
 	res, err := DB.Exec(`
 		insert into selection
 			(user_id, chat_id, active) values
